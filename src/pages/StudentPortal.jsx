@@ -214,6 +214,17 @@ export default function StudentPortal() {
                 {loading ? 'Please wait...' : mode === 'login' ? 'Sign In →' : mode === 'signup' ? 'Create Account →' : 'Send Reset Link →'}
               </button>
 
+              {mode !== 'forgot' && (
+                <button
+                  type="button"
+                  className="faculty-back-btn"
+                  style={{ marginTop: 12 }}
+                  onClick={() => navigate('/')}
+                >
+                  ← Back to Home
+                </button>
+              )}
+
             </form>
           </>
         )}

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import {
   doc, getDoc, collection, query,
-  where, getDocs, onSnapshot, updateDoc,
+  where, getDocs, onSnapshot, updateDoc, addDoc,
 } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 
@@ -22,6 +22,7 @@ export default function StudentDashboard() {
   const [editForm, setEditForm] = useState({});
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState('');
+  const [profileError, setProfileError] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,10 +49,14 @@ export default function StudentDashboard() {
     if (!student?.course) return;
     const unsub = onSnapshot(collection(db, 'notices'), snap => {
       const all = snap.docs.map(d => ({ id: d.id, ...d.data(), date: d.data().date?.toDate?.() || new Date() }));
-      setNotices(all.filter(n => n.audience?.includes('all') || n.audience?.includes(student.course)).sort((a, b) => b.date - a.date));
+      setNotices(all.filter(n =>
+        n.audience?.includes('all') ||
+        n.audience?.includes(student.course) ||
+        n.audience?.includes(student.id)
+      ).sort((a, b) => b.date - a.date));
     });
     return unsub;
-  }, [student?.course]);
+  }, [student?.course, student?.id]);
 
   const handleLogout = async () => { await signOut(auth); navigate('/portal'); };
 
@@ -70,8 +75,24 @@ export default function StudentDashboard() {
     return Math.round((attendance.filter(a => a.status === 'present').length / attendance.length) * 100);
   };
 
+  const sendFacultyNotification = async (title, description) => {
+    try {
+      await addDoc(collection(db, 'notices'), {
+        title,
+        description,
+        date: new Date(),
+        audience: ['faculty'],
+        priority: 'normal',
+        createdBy: student?.email || student?.name || 'Student',
+      });
+    } catch (err) {
+      console.error('Failed to send faculty notification', err);
+    }
+  };
+
   const handleProfileSave = async () => {
     setSavingProfile(true);
+    setProfileError('');
     try {
       await updateDoc(doc(db, 'students', student.id), {
         phone: editForm.phone, country: editForm.country,
@@ -80,9 +101,17 @@ export default function StudentDashboard() {
       setStudent(prev => ({ ...prev, ...editForm }));
       setEditMode(false);
       setProfileSuccess('Profile updated successfully!');
+      await sendFacultyNotification(
+        'Student profile updated',
+        `${editForm.name || student.name} updated their profile details. Please review the changes.`
+      );
       setTimeout(() => setProfileSuccess(''), 3000);
-    } catch (err) { console.error(err); }
-    finally { setSavingProfile(false); }
+    } catch (err) {
+      console.error(err);
+      setProfileError('Unable to save profile. Please try again.');
+    } finally {
+      setSavingProfile(false);
+    }
   };
 
   const setEF = (field) => (e) => setEditForm(p => ({ ...p, [field]: e.target.value }));
@@ -150,7 +179,10 @@ export default function StudentDashboard() {
           </div>
           <div className="db-topbar-right">
             <span className="db-topbar-date">{todayStr}</span>
-            <div className="db-notif-btn"><span className="db-notif-dot"/></div>
+            <button className="db-notif-btn" onClick={() => setActiveTab('notices')} title="View notices">
+              🔔
+              <span className="db-notif-dot"/>
+            </button>
             <div className="db-topbar-user">
               <div className="db-topbar-avatar">{student?.name?.[0] || 'S'}</div>
               <span className="db-topbar-name">{student?.name?.split(' ')[0] || 'Student'}</span>
@@ -353,14 +385,15 @@ export default function StudentDashboard() {
                 {!editMode
                   ?<button className="db-edit-btn"onClick={() =>setEditMode(true)}>Edit Profile</button>
                   : <div style={{ display: 'flex', gap: 8 }}>
-                      <button className="db-save-btn" onClick={handleProfileSave} disabled={savingProfile}>
-                        {savingProfile ?'Saving...':'Save'}
+                      <button type="button" className="db-save-btn" onClick={handleProfileSave} disabled={savingProfile}>
+                        {savingProfile ? 'Saving...' : 'Save'}
                       </button>
-                      <button className="db-cancel-btn" onClick={() => setEditMode(false)}>✕</button>
+                      <button type="button" className="db-cancel-btn" onClick={() => setEditMode(false)}>✕</button>
                     </div>
                 }
               </div>
               {profileSuccess && <div className="db-success-msg">{profileSuccess}</div>}
+              {profileError && <div className="db-error-msg">{profileError}</div>}
               <div className="db-profile-grid">
                 <div className="db-profile-field"><label>Email</label><p>{student?.email || '—'}</p></div>
                 <div className="db-profile-field"><label>Course</label><p>{student?.course || '—'}</p></div>

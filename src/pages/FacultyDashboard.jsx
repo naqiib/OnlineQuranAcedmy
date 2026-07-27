@@ -87,8 +87,28 @@ export default function FacultyDashboard() {
         approvedBy: faculty?.email,
         approvedAt: new Date()
       });
+      await sendStudentNotification(
+        studentId,
+        'Account approved',
+        'Your account has been approved by faculty. Welcome to the class!'
+      );
       fetchStudents();
     } catch (err) { console.error(err); }
+  };
+
+  const sendStudentNotification = async (studentId, title, description) => {
+    try {
+      await addDoc(collection(db, 'notices'), {
+        title,
+        description,
+        date: new Date(),
+        audience: [studentId],
+        priority: 'normal',
+        createdBy: faculty?.email || faculty?.name || 'Faculty',
+      });
+    } catch (err) {
+      console.error('Failed to send student notification', err);
+    }
   };
 
   const updateStudentProgress = async (studentId, progress) => {
@@ -99,10 +119,16 @@ export default function FacultyDashboard() {
         teacherNote,
         lastUpdated: new Date()
       });
+      await sendStudentNotification(
+        studentId,
+        'Progress updated',
+        `Your progress has been updated to ${progress}% by your teacher.`
+      );
       setSelectedStudent(null);
       fetchStudents();
-    } catch (err) { console.error(err); }
-    finally { setSavingNote(false); }
+    } catch (err) {
+      console.error(err);
+    } finally { setSavingNote(false); }
   };
 
   const updateStudentFee = async (studentId, amount) => {
@@ -115,6 +141,11 @@ export default function FacultyDashboard() {
         feeStatus: newPaid >= (student.totalFee || 0) ? 'paid' : 'pending',
         lastPaymentDate: new Date()
       });
+      await sendStudentNotification(
+        studentId,
+        'Fee updated',
+        `A payment of PKR ${amount} has been recorded for your account.`
+      );
       setFeeAmount('');
       fetchStudents();
     } catch (err) { console.error(err); }
@@ -147,9 +178,16 @@ export default function FacultyDashboard() {
         date: newResult.date || new Date().toISOString().split('T')[0]
       }];
       await updateDoc(doc(db, 'students', studentId), { results });
+      await sendStudentNotification(
+        studentId,
+        'New result added',
+        `A new exam result has been published for you: ${newResult.exam}. Check the results tab.`
+      );
       setNewResult({ exam: '', obtained: '', total: '', date: '' });
       fetchStudents();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const fmt = (d) => d ? new Date(d).toLocaleDateString() : 'N/A';
@@ -224,9 +262,10 @@ export default function FacultyDashboard() {
             />
           </div>
           <div className="fac-topbar-right">
-            <div className="fac-notif-btn">
+            <button className="fac-notif-btn" onClick={() => setActiveTab('notices')} title="View notices">
+              🔔
               <span className="fac-notif-dot"/>
-            </div>
+            </button>
             <div className="fac-topbar-user">
               <div className="fac-topbar-avatar">{faculty?.name?.[0] || 'N'}</div>
               <span className="fac-topbar-name">Faculty</span>

@@ -3,7 +3,7 @@
    Single merged CSS file (was split across per-component files)
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Poppins:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --navy-dark:   #071a10;
@@ -42,7 +42,7 @@ p {
 }
 a { text-decoration: none; color: inherit; }
 button { cursor: pointer; font-family: 'Poppins', sans-serif; }
-.arabic { font-family: 'Amiri', serif; }
+.arabic { font-family: 'Arvo', serif; }
 
 
 /* ---------- components/Navbar.css ---------- */
@@ -1877,7 +1877,7 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
 }
 
 .auzoo {
-  font-family: 'Amiri', serif;
+  font-family: 'Arvo', serif;
   font-size: 22px;
   color: #a7d169;
   direction: rtl;
@@ -1891,7 +1891,7 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   font-style: italic;
 }
 .bismillah {
-  font-family: 'Amiri', serif;
+  font-family: 'Arvo', serif;
   font-size: 30px;
   color: #fff;
   direction: rtl;
@@ -2095,7 +2095,7 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
 }
 
 .photo-arabic {
-  font-family: 'Amiri', serif;
+  font-family: 'Arvo', serif;
   font-size: 64px;
   color: rgba(144,205,244,0.6);
 }
@@ -2319,7 +2319,7 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
 }
 
 .promise-arabic {
-  font-family: 'Amiri', serif;
+  font-family: 'Arvo', serif;
   font-size: 24px;
   color: var(--navy);
   direction: rtl;
