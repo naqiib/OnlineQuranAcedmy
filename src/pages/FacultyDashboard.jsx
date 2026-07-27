@@ -14,6 +14,10 @@ export default function FacultyDashboard() {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [manageSection, setManageSection] = useState('overview');
+  const [manageError, setManageError] = useState('');
+  const [manageSuccess, setManageSuccess] = useState('');
+  const [newNoticeError, setNewNoticeError] = useState('');
   const [notices, setNotices] = useState([]);
   const [schedule, setSchedule] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,6 +69,17 @@ export default function FacultyDashboard() {
     } catch (err) { console.error(err); }
   };
 
+  const openManageModal = (student, section = 'overview') => {
+    setSelectedStudent(student);
+    setManageSection(section);
+    setProgressNote(student.progress || 0);
+    setTeacherNote(student.teacherNote || '');
+    setFeeAmount('');
+    setNewResult({ exam: '', obtained: '', total: '', date: '' });
+    setManageError('');
+    setManageSuccess('');
+  };
+
   useEffect(() => {
     const filtered = students.filter(s =>
       s.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -113,29 +128,43 @@ export default function FacultyDashboard() {
 
   const updateStudentProgress = async (studentId, progress) => {
     setSavingNote(true);
+    setManageError('');
     try {
+      const value = parseInt(progress);
+      if (Number.isNaN(value) || value < 0 || value > 100) {
+        setManageError('Enter a valid progress percentage between 0 and 100.');
+        return;
+      }
       await updateDoc(doc(db, 'students', studentId), {
-        progress: parseInt(progress),
+        progress: value,
         teacherNote,
         lastUpdated: new Date()
       });
       await sendStudentNotification(
         studentId,
         'Progress updated',
-        `Your progress has been updated to ${progress}% by your teacher.`
+        `Your progress has been updated to ${value}% by your teacher.`
       );
+      setManageSuccess('Progress updated successfully.');
       setSelectedStudent(null);
       fetchStudents();
     } catch (err) {
       console.error(err);
+      setManageError('Could not update progress. Please try again.');
     } finally { setSavingNote(false); }
   };
 
   const updateStudentFee = async (studentId, amount) => {
     setUpdatingFee(true);
+    setManageError('');
     try {
+      const value = parseInt(amount);
+      if (Number.isNaN(value) || value <= 0) {
+        setManageError('Enter a valid payment amount.');
+        return;
+      }
       const student = students.find(s => s.id === studentId);
-      const newPaid = (student.paidFee || 0) + parseInt(amount);
+      const newPaid = (student.paidFee || 0) + value;
       await updateDoc(doc(db, 'students', studentId), {
         paidFee: newPaid,
         feeStatus: newPaid >= (student.totalFee || 0) ? 'paid' : 'pending',
@@ -144,28 +173,43 @@ export default function FacultyDashboard() {
       await sendStudentNotification(
         studentId,
         'Fee updated',
-        `A payment of PKR ${amount} has been recorded for your account.`
+        `A payment of PKR ${value} has been recorded for your account.`
       );
       setFeeAmount('');
+      setManageSuccess('Payment recorded successfully.');
       fetchStudents();
-    } catch (err) { console.error(err); }
-    finally { setUpdatingFee(false); }
+    } catch (err) {
+      console.error(err);
+      setManageError('Could not record payment. Please try again.');
+    } finally { setUpdatingFee(false); }
   };
 
   const addNotice = async () => {
-    if (!newNotice.title || !newNotice.description) return alert('Fill all fields');
+    if (!newNotice.title || !newNotice.description) {
+      setNewNoticeError('Title and description are required.');
+      return;
+    }
     try {
       await addDoc(collection(db, 'notices'), {
         ...newNotice, date: new Date(),
         audience: ['all'], createdBy: faculty?.email
       });
       setNewNotice({ title: '', description: '', priority: 'normal' });
+      setNewNoticeError('');
       setShowAddNotice(false);
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+      setNewNoticeError('Could not publish notice. Please try again.');
+    }
   };
 
   const addResult = async (studentId) => {
-    if (!newResult.exam || !newResult.obtained || !newResult.total) return alert('Fill all fields');
+    setManageError('');
+    setManageSuccess('');
+    if (!newResult.exam || !newResult.obtained || !newResult.total) {
+      setManageError('Fill all result fields.');
+      return;
+    }
     try {
       const student = students.find(s => s.id === studentId);
       const pct = (parseInt(newResult.obtained) / parseInt(newResult.total)) * 100;
@@ -184,9 +228,11 @@ export default function FacultyDashboard() {
         `A new exam result has been published for you: ${newResult.exam}. Check the results tab.`
       );
       setNewResult({ exam: '', obtained: '', total: '', date: '' });
+      setManageSuccess('Result added successfully.');
       fetchStudents();
     } catch (err) {
       console.error(err);
+      setManageError('Could not add result. Please try again.');
     }
   };
 
@@ -359,23 +405,13 @@ export default function FacultyDashboard() {
                          Approve
                       </button>
                     )}
-                    <button className="fac-btn" onClick={() => {
-                      setSelectedStudent(student);
-                      setTeacherNote(student.teacherNote || '');
-                      setProgressNote(student.progress || 0);
-                    }}>
+                    <button className="fac-btn" onClick={() => openManageModal(student, 'overview')}>
                        Manage
                     </button>
-                    <button className="fac-btn" onClick={() => {
-                      const amt = prompt('Enter amount paid:', '0');
-                      if (amt) updateStudentFee(student.id, amt);
-                    }}>
+                    <button className="fac-btn" onClick={() => openManageModal(student, 'fee')}>
                        Add fee
                     </button>
-                    <button className="fac-btn" onClick={() => {
-                      const p = prompt('Enter progress %:', student.progress || 0);
-                      if (p) updateStudentProgress(student.id, p);
-                    }}>
+                    <button className="fac-btn" onClick={() => openManageModal(student, 'progress')}>
                        Update progress
                     </button>
                   </div>
@@ -415,8 +451,13 @@ export default function FacultyDashboard() {
           {activeTab === 'schedule' && (
             <div style={{ background: '#fff', border: '1px solid #e8edf5', borderRadius: 12, padding: 24 }}>
               <div className="fac-section-head">
-                <span className="fac-section-title">Class Schedule</span>
-                <button className="fac-add-btn" style={{ margin: 0 }} onClick={() => alert('Schedule management coming soon!')}>
+                <div>
+                  <span className="fac-section-title">Class Schedule</span>
+                  <p style={{ margin: '8px 0 0', color: '#64748b', fontSize: 13 }}>
+                    Review upcoming class sessions and schedule details in one place.
+                  </p>
+                </div>
+                <button className="fac-add-btn" style={{ margin: 0, opacity: 0.65, cursor: 'not-allowed' }} disabled>
                   + Manage
                 </button>
               </div>
@@ -458,6 +499,11 @@ export default function FacultyDashboard() {
                         <span className={`fac-status ${s.feeStatus === 'paid' ? 'active' : 'pending'}`}>
                           {s.feeStatus ==='paid'?'Paid':'⏳ Pending'}
                         </span>
+                      </td>
+                      <td>
+                        <button className="fac-btn" onClick={() => openManageModal(s, 'fee')}>
+                          Record payment
+                        </button>
                       </td>
                     </tr>
                   ))}

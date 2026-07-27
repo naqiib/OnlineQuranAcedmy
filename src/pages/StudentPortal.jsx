@@ -207,7 +207,10 @@ export default function StudentPortal() {
               )}
 
               {mode === 'forgot' && (
-                <button type="button" className="sp-forgot-link" style={{ marginBottom: 10 }} onClick={() => switchMode('login')}>← Back to Sign In</button>
+                <button type="button" className="sp-forgot-link" style={{ marginBottom: 10 }} onClick={() => switchMode('login')}>
+                  <span className="button-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span>
+                  Back to Sign In
+                </button>
               )}
 
               <button type="submit" className="sp-submit" disabled={loading}>
@@ -221,7 +224,8 @@ export default function StudentPortal() {
                   style={{ marginTop: 12 }}
                   onClick={() => navigate('/')}
                 >
-                  ← Back to Home
+                  <span className="button-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span>
+                  Back to Home
                 </button>
               )}
 
