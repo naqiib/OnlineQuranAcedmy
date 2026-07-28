@@ -2,6 +2,15 @@
 import { Link } from 'react-router-dom';
 import courses from '../data/coursesData';
 
+const ACCENT = {
+  blue: '#2bb573',
+  green: '#059669',
+  purple: '#7c3aed',
+  amber: '#d97706',
+  rose: '#e11d48',
+  teal: '#0891b2',
+};
+
 export default function Courses() {
   return (
     <section className="courses-page">
@@ -36,41 +45,32 @@ export default function Courses() {
 }
 
 function CourseCard({ course: c }) {
+  const accent = ACCENT[c.color] || ACCENT.blue;
+
   return (
-    <div className={`course-card card-${c.color}`}>
-      <div className={`card-banner banner-${c.color}`} />
+    <div className="course-card" style={{ '--accent': accent }}>
+      <span className="course-card-glow" />
+      <span className="course-card-glow course-card-glow--sm" />
 
-      <div className="card-body">
-        <div className="card-top-row">
-          <div className={`course-icon icon-${c.color}`}>{c.icon}</div>
-          <div className="card-info">
-            <h3>{c.title}</h3>
-            <p>{c.desc}</p>
-          </div>
+      <div className="course-card-badge">{c.icon}</div>
+
+      <span className="course-card-tag">{c.tag}</span>
+
+      <h3 className="course-card-title">{c.title}</h3>
+      <p className="course-card-desc">{c.desc}</p>
+
+      <div className="course-card-footer">
+        <div className="course-card-icons">
+          <span className="course-card-icon-circle" title={`${c.sessions} sessions`}>⏱</span>
+          <span className="course-card-icon-circle" title={c.age}></span>
+          <span className="course-card-icon-circle" title={`${c.videos.length} video lessons`}></span>
         </div>
 
-        <div className="card-tags">
-          <span className={`tag tag-${c.tagColor}`}>{c.tag}</span>
-          <span className="tag tag-gray">{c.duration}</span>
-        </div>
-
-        <div className="card-stats">
-          <div className="stat-pill">
-            <span className="pill-icon">⏱</span>
-            <strong>{c.sessions}</strong>
-          </div>
-          <div className="stat-pill">
-            <span className="pill-icon"></span>
-            <strong>{c.age}</strong>
-          </div>
-          <div className="stat-pill">
-            <span className="pill-icon"></span>
-            <strong>{c.videos.length} lessons</strong>
-          </div>
-        </div>
-
-        <Link to={`/courses/${c.id}`} className="card-btn">
-          View Full Course →
+        <Link to={`/courses/${c.id}`} className="course-card-viewmore">
+          View more
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+          </svg>
         </Link>
       </div>
     </div>

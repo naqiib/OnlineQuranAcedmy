@@ -3,7 +3,7 @@
    Single merged CSS file (was split across per-component files)
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Poppins:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap');
 
 :root {
   --navy-dark:   #071a10;
@@ -42,7 +42,7 @@ p {
 }
 a { text-decoration: none; color: inherit; }
 button { cursor: pointer; font-family: 'Poppins', sans-serif; }
-.arabic { font-family: 'Arvo', serif; }
+.arabic { font-family: 'Amiri', serif; }
 
 
 /* ---------- components/Navbar.css ---------- */
@@ -50,8 +50,9 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
 
 /* Base Navbar Styles */
 .navbar {
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  background: #23985f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 14px rgba(35, 152, 95, 0.25);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -81,26 +82,26 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   object-fit: contain;
 }
 
-/* Desktop Navigation Links - ALL SAME STYLE */
+/* Desktop Navigation Links */
 .navbar-links {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* Common style for ALL buttons/links (Home, About, Courses, Contact, Fee Structure, Free Trial) */
+/* Common style for ALL buttons/links */
 .nav-link,
 .fees-btn,
 .navbar-cta {
   text-decoration: none;
-  color: #334155;
+  color: #ffffff;
   font-weight: 600;
   font-size: 14px;
   padding: 8px 18px;
   border-radius: 30px;
   transition: all 0.2s ease;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
   font-family: 'Poppins', sans-serif;
   display: inline-flex;
@@ -108,27 +109,28 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   gap: 5px;
 }
 
-/* Same hover effect for ALL - Light Blue */
+/* Hover effect */
 .nav-link:hover,
 .fees-btn:hover,
 .navbar-cta:hover {
-  background: #eef2ff;
-  color: #17472c;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
 }
 
 /* Active link style */
 .nav-link.active {
-  background: #eef2ff;
-  color: #17472c;
+  background: rgba(0, 0, 0, 0.18);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Student Portal Button - Blue Background (Different) */
+/* Student Portal Button - Solid White */
 .portal-btn {
-  background: #17472c;
-  color: white;
+  background: #ffffff;
+  color: #1c7a4b;
   padding: 8px 20px;
   border-radius: 30px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
   text-decoration: none;
   transition: all 0.2s ease;
@@ -137,21 +139,23 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   gap: 8px;
   border: none;
   margin-left: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .portal-btn:hover {
-  background: #0e2b1b;
+  background: #f1f8e9;
+  color: #14291b;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(23,71,44,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Faculty Portal Button - Blue Background (Different) */
+/* Faculty Portal Button - Solid White Background */
 .faculty-portal-btn {
-  background: #17472c;
-  color: white;
+  background: #ffffff;
+  color: #1c7a4b;
   padding: 8px 20px;
   border-radius: 30px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
   text-decoration: none;
   transition: all 0.2s ease;
@@ -159,12 +163,14 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   align-items: center;
   gap: 8px;
   border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .faculty-portal-btn:hover {
-  background: #0e2b1b;
+  background: #f1f8e9;
+  color: #14291b;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(23,71,44,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Hamburger Menu */
@@ -181,7 +187,7 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
 .hamburger span {
   width: 25px;
   height: 2.5px;
-  background: #17472c;
+  background: #ffffff;
   transition: all 0.3s ease;
   border-radius: 2px;
 }
@@ -202,18 +208,18 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
 .mobile-menu {
   display: none;
   flex-direction: column;
-  background: #fff;
+  background: #23985f;
   padding: 20px;
   gap: 12px;
-  border-top: 1px solid #e2e8f0;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .mobile-menu a,
 .mobile-menu button {
   padding: 12px 16px;
   text-decoration: none;
-  color: #334155;
+  color: #ffffff;
   font-weight: 600;
   font-size: 15px;
   border-radius: 10px;
@@ -227,21 +233,35 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
 
 .mobile-menu a:hover,
 .mobile-menu button:hover {
-  background: #eef2ff;
-  color: #17472c;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
 }
 
 /* Mobile Portal Buttons */
-.mobile-menu .portal-btn-mobile,
-.mobile-menu .mobile-faculty-btn {
-  background: #17472c;
-  color: white;
+.mobile-menu .portal-btn-mobile {
+  background: #ffffff;
+  color: #1c7a4b;
+  font-weight: 700;
   text-align: center;
+  border: none;
 }
 
-.mobile-menu .portal-btn-mobile:hover,
+.mobile-menu .portal-btn-mobile:hover {
+  background: #f1f8e9;
+  color: #14291b;
+}
+
+.mobile-menu .mobile-faculty-btn {
+  background: #ffffff;
+  color: #1c7a4b;
+  font-weight: 700;
+  text-align: center;
+  border: none;
+}
+
 .mobile-menu .mobile-faculty-btn:hover {
-  background: #0e2b1b;
+  background: #f1f8e9;
+  color: #14291b;
 }
 
 /* Responsive */
@@ -298,6 +318,25 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   min-height: 520px;
 }
 
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-fade-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, transparent 35%, rgba(20,41,27,0.55) 100%),
+    linear-gradient(180deg, rgba(20,41,27,0.15) 0%, transparent 30%, transparent 70%, rgba(20,41,27,0.25) 100%);
+}
+
 .hero-glow {
   position: absolute;
   border-radius: 50%;
@@ -318,7 +357,6 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   flex: 1;
   max-width: 520px;
   z-index: 1;
-  animation: fadeUp 0.7s ease both;
 }
 
 .hero-tag {
@@ -408,7 +446,6 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
 .hero-right {
   flex: 0 0 280px;
   z-index: 1;
-  animation: fadeUp 0.9s ease both;
 }
 .hero-card {
   background: rgba(255,255,255,0.07);
@@ -749,147 +786,143 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   margin-bottom: 40px;
 }
 
-/* ── Card ── */
+/* ── Card (dark glow-badge style) ── */
 .course-card {
-  background: #fff;
-  border: 0.5px solid #e8f4dc;
-  border-radius: 14px;
+  position: relative;
+  background: linear-gradient(160deg, #1c1c1c 0%, #0c0c0c 100%);
+  border-radius: 22px;
   overflow: hidden;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  padding: 24px 22px 20px;
   display: flex;
   flex-direction: column;
+  min-height: 250px;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.16);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .course-card:hover {
-  border-color: #c3e0a0;
-  box-shadow: 0 6px 28px rgba(43,181,115,0.1);
-  transform: translateY(-3px);
+  transform: translateY(-5px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.3);
 }
 
-/* Banner accent */
-.card-banner { height: 5px; }
-.banner-blue   { background: linear-gradient(90deg, #2bb573, #4fbe82); }
-.banner-green  { background: linear-gradient(90deg, #059669, #34d399); }
-.banner-purple { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
-.banner-amber  { background: linear-gradient(90deg, #d97706, #fbbf24); }
-.banner-rose   { background: linear-gradient(90deg, #e11d48, #fb7185); }
-.banner-teal   { background: linear-gradient(90deg, #0891b2, #22d3ee); }
-
-.card-body {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+.course-card-glow {
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 72%);
+  opacity: 0.35;
+  pointer-events: none;
 }
 
-/* Top row */
-.card-top-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 14px;
+.course-card-glow--sm {
+  top: -20px;
+  right: -20px;
+  width: 90px;
+  height: 90px;
+  opacity: 0.45;
 }
 
-.course-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
+.course-card-badge {
+  position: relative;
+  z-index: 1;
+  align-self: flex-end;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Arvo', 'Georgia', serif;
-  font-size: 26px;
-  flex-shrink: 0;
-}
-
-.icon-blue   { background: #f1f8e9; color: #2bb573; }
-.icon-green  { background: #ecfdf5; color: #059669; }
-.icon-purple { background: #f5f3ff; color: #7c3aed; }
-.icon-amber  { background: #fffbeb; color: #d97706; }
-.icon-rose   { background: #fff1f2; color: #e11d48; }
-.icon-teal   { background: #ecfeff; color: #0891b2; }
-
-.card-info h3 {
-  font-size: 15px;
   font-weight: 800;
-  color: #14291b;
-  margin-bottom: 5px;
-}
-
-.card-info p {
-  font-size: 12px;
-  color: #5f7c64;
-  line-height: 1.6;
-}
-
-/* Tags */
-.card-tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+  font-size: 18px;
+  color: var(--accent);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   margin-bottom: 14px;
 }
 
-.tag {
-  border-radius: 6px;
+.course-card-tag {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 20px;
   font-size: 11px;
-  padding: 3px 10px;
   font-weight: 700;
-  border: 1px solid transparent;
+  padding: 3px 12px;
+  margin-bottom: 10px;
 }
 
-.tag-blue   { background: #f1f8e9; color: #2bb573; border-color: #d3e9b7; }
-.tag-green  { background: #ecfdf5; color: #059669; border-color: #a7f3d0; }
-.tag-purple { background: #f5f3ff; color: #7c3aed; border-color: #ddd6fe; }
-.tag-amber  { background: #fffbeb; color: #d97706; border-color: #fde68a; }
-.tag-gray   { background: #f6fbef; color: #5f7c64; border-color: #e8f4dc; }
-
-/* Stats */
-.card-stats {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
+.course-card-title {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  font-size: 19px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  max-width: 85%;
 }
 
-.stat-pill {
+.course-card-desc {
+  position: relative;
+  z-index: 1;
+  color: #a8a8a8;
+  font-size: 13px;
+  line-height: 1.65;
+  margin-bottom: 22px;
+}
+
+.course-card-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
   display: flex;
   align-items: center;
-  gap: 5px;
-  background: #f6fbef;
-  border: 0.5px solid #e8f4dc;
-  border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 11px;
-  color: #5f7c64;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.stat-pill strong {
-  color: #14291b;
-  font-weight: 700;
+.course-card-icons {
+  display: flex;
+  gap: 8px;
 }
 
-.pill-icon { font-size: 12px; }
+.course-card-icon-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #d4d4d4;
+}
 
-/* CTA button on card */
-.card-btn {
-  display: block;
-  margin-top: auto;
-  background: #2bb573;
+.course-card-viewmore {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 11px;
   font-size: 13px;
   font-weight: 700;
-  text-align: center;
   text-decoration: none;
-  cursor: pointer;
-  transition: background 0.15s;
-  font-family: inherit;
+  white-space: nowrap;
 }
 
-.card-btn:hover { background: #23985f; }
+.course-card-viewmore svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s ease;
+}
+
+.course-card-viewmore:hover svg { transform: translateY(2px); }
 
 /* ── CTA section ── */
 .courses-cta {
@@ -1877,7 +1910,7 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
 }
 
 .auzoo {
-  font-family: 'Arvo', serif;
+  font-family: 'Amiri', serif;
   font-size: 22px;
   color: #a7d169;
   direction: rtl;
@@ -1891,7 +1924,7 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   font-style: italic;
 }
 .bismillah {
-  font-family: 'Arvo', serif;
+  font-family: 'Amiri', serif;
   font-size: 30px;
   color: #fff;
   direction: rtl;
@@ -2095,7 +2128,7 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
 }
 
 .photo-arabic {
-  font-family: 'Arvo', serif;
+  font-family: 'Amiri', serif;
   font-size: 64px;
   color: rgba(144,205,244,0.6);
 }
@@ -2319,7 +2352,7 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
 }
 
 .promise-arabic {
-  font-family: 'Arvo', serif;
+  font-family: 'Amiri', serif;
   font-size: 24px;
   color: var(--navy);
   direction: rtl;
@@ -2797,7 +2830,7 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   object-fit: cover;
 }
 
-.cd-video-placeholder {
+.cd-drive-player {
   min-height: 220px;
   display: flex;
   flex-direction: column;
@@ -2843,6 +2876,25 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   color: #5f7c64;
   max-width: 300px;
   line-height: 1.6;
+}
+
+.cd-drive-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #2bb573;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.cd-drive-btn:hover {
+  background: #23985f;
+  transform: translateY(-2px);
 }
 
 /* ── Video list ── */
@@ -2935,6 +2987,30 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   background: #ecfdf5;
   color: #059669;
   border: 1px solid #a7f3d0;
+}
+
+.cd-ready-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.cd-soon-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: #f6fbef;
+  color: #8a9c8c;
+  border: 1px solid #e8f4dc;
 }
 
 /* ── Upload box ── */
@@ -4136,20 +4212,6 @@ body { font-family: var(--font); background: var(--surface); color: var(--text-p
     transform: translateY(-2px);
 }
 
-.faculty-back-btn .button-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
-}
-
-.faculty-back-btn .button-icon svg {
-    width: 100%;
-    height: 100%;
-}
-
 /* Divider with text */
 .faculty-divider {
     display: flex;
@@ -4362,14 +4424,25 @@ body { font-family: var(--font); background: var(--surface); color: var(--text-p
 }
 
 .sp-error {
-    color: white !important;
-    background-color: #d32f2f;
+    color: #e11d48 !important;
     font-size: 0.75rem;
-    padding: 2px 8px;
-    border-radius: 4px;
-    display: inline-block;
-    margin-top: 5px;
     font-weight: 600;
+    display: block;
+    margin-top: 4px;
+}
+
+/* Global Field Level Error Styling */
+.field-error {
+    color: #e11d48;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 4px;
+    display: block;
+    text-align: left;
+}
+
+.input-error-border {
+    border-color: #e11d48 !important;
 }
 
 /* SUCCESS ALERT - USING YOUR COLOR #17472c */
@@ -4460,6 +4533,28 @@ body { font-family: var(--font); background: var(--surface); color: var(--text-p
     font-size: 0.9rem;
     font-weight: 500;
     margin-bottom: 15px;
+}
+
+/* Icon used inside .sp-forgot-link / .faculty-back-btn (StudentPortal).
+   Without an explicit size, an inline <svg> renders at its browser
+   default (~300x150px), which is why the back button looked huge. */
+.button-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+.button-icon svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+
+.faculty-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sp-success {

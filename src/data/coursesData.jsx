@@ -1,4 +1,11 @@
 // src/data/coursesData.js
+//
+// VIDEO LINKS: paste each lesson's Google Drive share link into `driveUrl`.
+// In Google Drive: right-click the video → Share → "Anyone with the link" →
+// Copy link. Paste that full link as-is (e.g. driveUrl: 'https://drive.google.com/file/d/XXXXXXXX/view?usp=sharing').
+// Leave driveUrl: '' for lessons not uploaded yet — the site will show
+// "Coming soon" until a link is added. Videos are NOT hosted on this
+// website — they open in Google Drive, so there's no server storage cost.
 
 const courses = [
   {
@@ -35,10 +42,10 @@ const courses = [
     ],
     prereq: 'No prior knowledge needed — perfect for absolute beginners and young children.',
     videos: [
-      { title: 'Lesson 1 — Arabic Alphabet Introduction', dur: '18 min' },
-      { title: 'Lesson 2 — Fathah & Short Vowels',        dur: '22 min' },
-      { title: 'Lesson 3 — Kasrah & Dammah Practice',     dur: '20 min' },
-      { title: 'Lesson 4 — Joining Letters',               dur: '25 min' },
+      { title: 'Lesson 1 — Arabic Alphabet Introduction', dur: '18 min' , driveUrl: '' },
+      { title: 'Lesson 2 — Fathah & Short Vowels',        dur: '22 min' , driveUrl: '' },
+      { title: 'Lesson 3 — Kasrah & Dammah Practice',     dur: '20 min' , driveUrl: '' },
+      { title: 'Lesson 4 — Joining Letters',               dur: '25 min' , driveUrl: '' },
     ],
   },
   {
@@ -75,10 +82,10 @@ const courses = [
     ],
     prereq: 'Student must have completed Noorani Qaida or have basic Arabic letter knowledge.',
     videos: [
-      { title: 'Lesson 1 — Surah Al-Fatihah Recitation', dur: '15 min' },
-      { title: 'Lesson 2 — Juz Amma Overview',           dur: '28 min' },
-      { title: 'Lesson 3 — Quranic Signs & Symbols',     dur: '20 min' },
-      { title: 'Lesson 4 — Waqf Rules in Practice',      dur: '24 min' },
+      { title: 'Lesson 1 — Surah Al-Fatihah Recitation', dur: '15 min' , driveUrl: '' },
+      { title: 'Lesson 2 — Juz Amma Overview',           dur: '28 min' , driveUrl: '' },
+      { title: 'Lesson 3 — Quranic Signs & Symbols',     dur: '20 min' , driveUrl: '' },
+      { title: 'Lesson 4 — Waqf Rules in Practice',      dur: '24 min' , driveUrl: '' },
     ],
   },
   {
@@ -114,10 +121,10 @@ const courses = [
     ],
     prereq: 'Must be able to read Quran fluently (Nazira completed). Strong commitment required.',
     videos: [
-      { title: 'Intro — The Sabaqi & Manzil System',   dur: '12 min' },
-      { title: 'Lesson 1 — Surah An-Nas to Al-Asr',    dur: '30 min' },
-      { title: 'Lesson 2 — Memorization Techniques',   dur: '22 min' },
-      { title: 'Lesson 3 — Revision Strategy Explained', dur: '18 min' },
+      { title: 'Intro — The Sabaqi & Manzil System',   dur: '12 min' , driveUrl: '' },
+      { title: 'Lesson 1 — Surah An-Nas to Al-Asr',    dur: '30 min' , driveUrl: '' },
+      { title: 'Lesson 2 — Memorization Techniques',   dur: '22 min' , driveUrl: '' },
+      { title: 'Lesson 3 — Revision Strategy Explained', dur: '18 min' , driveUrl: '' },
     ],
   },
   {
@@ -153,10 +160,10 @@ const courses = [
     ],
     prereq: 'Must be able to read Quran. Recommended after completing Nazira.',
     videos: [
-      { title: 'Lesson 1 — What is Tajweed & Why it Matters', dur: '14 min' },
-      { title: 'Lesson 2 — Makharij — Throat Letters',         dur: '26 min' },
-      { title: 'Lesson 3 — Noon Sakinah Rules',                dur: '28 min' },
-      { title: 'Lesson 4 — Madd Rules Explained',              dur: '32 min' },
+      { title: 'Lesson 1 — What is Tajweed & Why it Matters', dur: '14 min' , driveUrl: '' },
+      { title: 'Lesson 2 — Makharij — Throat Letters',         dur: '26 min' , driveUrl: '' },
+      { title: 'Lesson 3 — Noon Sakinah Rules',                dur: '28 min' , driveUrl: '' },
+      { title: 'Lesson 4 — Madd Rules Explained',              dur: '32 min' , driveUrl: '' },
     ],
   },
   {
@@ -192,10 +199,10 @@ const courses = [
     ],
     prereq: 'No prerequisites — can run alongside any Quran course.',
     videos: [
-      { title: 'Lesson 1 — The Five Pillars of Islam', dur: '20 min' },
-      { title: 'Lesson 2 — How to Perform Salah',      dur: '35 min' },
-      { title: 'Lesson 3 — Introduction to Seerah',    dur: '22 min' },
-      { title: 'Lesson 4 — Daily Duas & Their Meanings', dur: '18 min' },
+      { title: 'Lesson 1 — The Five Pillars of Islam', dur: '20 min' , driveUrl: '' },
+      { title: 'Lesson 2 — How to Perform Salah',      dur: '35 min' , driveUrl: '' },
+      { title: 'Lesson 3 — Introduction to Seerah',    dur: '22 min' , driveUrl: '' },
+      { title: 'Lesson 4 — Daily Duas & Their Meanings', dur: '18 min' , driveUrl: '' },
     ],
   },
   {
@@ -230,10 +237,10 @@ const courses = [
     ],
     prereq: 'Basic Quran reading ability recommended. Ideal alongside Nazira or after Qaida.',
     videos: [
-      { title: 'Lesson 1 — Arabic Grammar: Ism, Fiil, Harf',         dur: '24 min' },
-      { title: 'Lesson 2 — 100 Most Common Quranic Words',            dur: '30 min' },
-      { title: 'Lesson 3 — Understanding Al-Fatihah Word by Word',    dur: '28 min' },
-      { title: 'Lesson 4 — Root Word System Explained',               dur: '26 min' },
+      { title: 'Lesson 1 — Arabic Grammar: Ism, Fiil, Harf',         dur: '24 min' , driveUrl: '' },
+      { title: 'Lesson 2 — 100 Most Common Quranic Words',            dur: '30 min' , driveUrl: '' },
+      { title: 'Lesson 3 — Understanding Al-Fatihah Word by Word',    dur: '28 min' , driveUrl: '' },
+      { title: 'Lesson 4 — Root Word System Explained',               dur: '26 min' , driveUrl: '' },
     ],
   },
 ];

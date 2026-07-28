@@ -6,13 +6,15 @@ import courses from '../data/coursesData';
 export default function CourseDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const course = courses[Number(id)];
+  const courseId = Number(id);
+  const course = (!Number.isNaN(courseId) && courseId >= 0 && courseId < courses.length) ? courses[courseId] : null;
   const [activeVideo, setActiveVideo] = useState(0);
 
   if (!course) {
     return (
       <div className="cd-not-found">
-        <p>Course not found.</p>
+        <h2>Course Not Found</h2>
+        <p>The course you are looking for does not exist or has been moved.</p>
         <button onClick={() => navigate('/courses')} className="cd-back-btn">
           ← Back to Courses
         </button>
@@ -55,34 +57,25 @@ export default function CourseDetail() {
               </div>
 
               <div className="cd-player">
-                {currentVideo?.youtubeId ? (
-                  <iframe
-                    key={currentVideo.youtubeId}
-                    width="100%"
-                    height="300"
-                    src={`https://www.youtube.com/embed/${currentVideo.youtubeId}`}
-                    title={currentVideo.title}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    style={{ borderRadius: '12px', display: 'block' }}
-                  />
-                ) : currentVideo?.url ? (
-                  <video
-                    key={currentVideo.url}
-                    src={currentVideo.url}
-                    controls
-                    className="cd-video-el"
-                  />
-                ) : (
-                  <div className="cd-video-placeholder">
-                    <div className="cd-play-ring">
-                      <div className="cd-play-arrow" />
-                    </div>
-                    <div className="cd-player-title">{currentVideo?.title}</div>
-                    <div className="cd-player-sub">Video coming soon — check back later.</div>
+                <div className="cd-drive-player">
+                  <div className="cd-play-ring">
+                    <div className="cd-play-arrow" />
                   </div>
-                )}
+                  <div className="cd-player-title">{currentVideo?.title}</div>
+
+                  {currentVideo?.driveUrl ? (
+                    <a
+                      href={currentVideo.driveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="cd-drive-btn"
+                    >
+                      ▶ Watch on Google Drive
+                    </a>
+                  ) : (
+                    <div className="cd-player-sub">Video coming soon — check back later.</div>
+                  )}
+                </div>
               </div>
 
               <div className="cd-video-list">
@@ -97,7 +90,13 @@ export default function CourseDetail() {
                       <div className="cd-vtitle">{v.title}</div>
                       <div className="cd-vdur">{v.dur}</div>
                     </div>
-                    {i === activeVideo && <span className="cd-watching-badge">Watching</span>}
+                    {i === activeVideo ? (
+                      <span className="cd-watching-badge">Watching</span>
+                    ) : v.driveUrl ? (
+                      <span className="cd-ready-badge">Ready</span>
+                    ) : (
+                      <span className="cd-soon-badge">Soon</span>
+                    )}
                   </button>
                 ))}
               </div>
