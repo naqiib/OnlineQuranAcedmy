@@ -1,115 +1,72 @@
+// src/components/Hero.jsx
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import HeroCanvas from './HeroCanvas';
+import { useState } from 'react';
 
-const coursePills = [
-  'Noorani Qaida',
-  'Nazira Quran',
-  'Hifz ul Quran',
-  'Tajweed ul Quran',
-  'Islamic Studies',
+const quranImg = "https://plus.unsplash.com/premium_photo-1677587536653-0d02efbb70ee?fm=jpg&q=60&w=1200&auto=format&fit=crop&ixlib=rb-4.1.0";
+
+const featuredCourses = [
+  { title: 'Reading Quran Basics', price: '$99.00', duration: 'Live Classes', level: 'Beginner' },
+  { title: 'Quran & Tajweed', price: '$35.00', duration: 'Live Classes', level: 'Beginner' },
+  { title: 'Quran Recitation', price: '$70.00', duration: 'Live Classes', level: 'Beginner' },
 ];
 
-const contentDelay = 0.15;
-const step = 0.1;
-
-const fadeUp = (delay) => ({
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, delay, ease: [0.16, 1, 0.3, 1] } },
-});
-
-const fadeIn = (delay) => ({
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.5, delay } },
-});
-
-const cardVariants = {
-  hidden: { opacity: 0, scale: 0.94, y: 20 },
-  visible: {
-    opacity: 1, scale: 1, y: 0,
-    transition: { duration: 0.6, delay: contentDelay + step * 5, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
-const pillContainerVariants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.08, delayChildren: contentDelay + step * 6 },
-  },
-};
-
-const pillVariants = {
-  hidden: { opacity: 0, x: -12 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease: 'easeOut' } },
-};
-
 export default function Hero() {
+  const [index, setIndex] = useState(0);
+  const course = featuredCourses[index];
+
+  const next = () => setIndex((i) => (i + 1) % featuredCourses.length);
+  const prev = () => setIndex((i) => (i - 1 + featuredCourses.length) % featuredCourses.length);
+
   return (
-    <section className="hero">
-      <HeroCanvas />
-      <div className="hero-fade-overlay" />
+    <section className="hero-v2">
+      <div className="hero-v2-glow" />
 
-      <div className="hero-glow hero-glow--tr" />
-      <div className="hero-glow hero-glow--bl" />
+      <motion.div
+        className="hero-v2-left"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <h1 className="hero-v2-title">
+          Recite the <span className="accent-text">Quran</span> in an
+          orderly and clear manner
+          <span className="hero-v2-verse"> (Surah Muzammil: Verse 4)</span>
+        </h1>
 
-      <div className="hero-left">
-        <motion.div className="hero-tag" initial="hidden" animate="visible" variants={fadeUp(contentDelay)}>
-          Certified Quran Teaching
-        </motion.div>
+        <p className="hero-v2-sub">
+          Comprehensive Arabic, Quran, and Islamic studies courses suitable
+          for all ages and skill levels online.
+        </p>
 
-        <motion.p
-          className="hero-arabic arabic"
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn(contentDelay + step)}
-        >
-          تعلّم القرآن الكريم
-        </motion.p>
-
-        <motion.h1 className="hero-title" initial="hidden" animate="visible" variants={fadeUp(contentDelay + step * 2)}>
-          Learn Quran with<br />
-          <span className="hero-title--accent">Expert Teachers</span><br />
-          from Home
-        </motion.h1>
-
-        <motion.p
-          className="hero-subtitle"
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp(contentDelay + step * 3)}
-        >
-          Learn Quran online with <strong>Hafiz Safeer Khan</strong> &amp;{' '}
-          <strong>Shahana Safir</strong> — experienced, certified teachers with
-          over 15 combined years of online &amp; physical teaching.
-        </motion.p>
-
-        <motion.div
-          className="hero-btns"
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp(contentDelay + step * 4)}
-        >
-          <motion.div whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.97 }}>
-            <Link to="/contact" className="btn-primary">Register Free Trial</Link>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.97 }}>
-            <Link to="/courses" className="btn-secondary">View Courses</Link>
-          </motion.div>
-        </motion.div>
-      </div>
-
-      <motion.div className="hero-right" initial="hidden" animate="visible" variants={cardVariants}>
-        <div className="hero-card">
-          <div className="hero-card-title">Our Courses</div>
-          <motion.div initial="hidden" animate="visible" variants={pillContainerVariants}>
-            {coursePills.map((c) => (
-              <motion.div className="course-pill" key={c} variants={pillVariants}>
-                <div className="course-dot" />
-                <span>{c}</span>
-              </motion.div>
-            ))}
-          </motion.div>
+        <div className="hero-v2-btns">
+          <Link to="/courses" className="btn-primary">Find your course</Link>
+          <Link to="/contact" className="btn-secondary-outline">Sign up for Free</Link>
         </div>
+      </motion.div>
+
+      <motion.div
+        className="hero-v2-card"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <img src={quranImg} alt={course.title} className="hero-v2-card-img" />
+        <div className="hero-v2-card-body">
+          <h3>{course.title}</h3>
+          <div className="hero-v2-price">{course.price}</div>
+          <div className="hero-v2-meta">
+            <span>⏱ {course.duration}</span>
+            <span>📶 {course.level}</span>
+          </div>
+          <div className="hero-v2-card-btns">
+            <Link to="/courses" className="btn-primary sm">Register Now</Link>
+            <Link to="/courses" className="btn-secondary-outline sm">See Details</Link>
+          </div>
+        </div>
+
+        <button className="hero-v2-arrow left" onClick={prev}>←</button>
+        <button className="hero-v2-arrow right" onClick={next}>→</button>
       </motion.div>
     </section>
   );
