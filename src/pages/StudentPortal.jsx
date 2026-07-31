@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, updateProfile, signOut } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-import quranBg from '../assets/quran-bg.jpg';
 import academyLogo from '../assets/logo.png';
 
 const COURSES = ['Noorani Qaida','Nazira Quran','Hifz ul Quran','Tajweed ul Quran','Islamic Studies','Arabic Language'];
@@ -24,13 +23,13 @@ function firebaseMsg(code) {
 
 export default function StudentPortal() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState('login');
+  const [mode, setMode] = useState('login'); // 'login' | 'signup' | 'forgot'
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [globalErr, setGlobalErr] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  const [form, setForm] = useState({ name:'', email:'', course:'', password:'', confirm:'' });
+  const [form, setForm] = useState({ name: '', email: '', course: '', password: '', confirm: '' });
   const [errors, setErrors] = useState({});
 
   const set = (field) => (e) => {
@@ -101,137 +100,158 @@ export default function StudentPortal() {
     }
   };
 
+  const rightActive = mode === 'signup';
+
   return (
-    <div className="sp-wrapper" style={{ backgroundImage: `url(${quranBg})` }}>
-      <Link to="/" className="sp-back">← Back to Website</Link>
-      <div className="sp-card">
-        <div className="sp-bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
-        <div className="sp-brand">
-          <img src={academyLogo} alt="Safeer Quran Academy" className="sp-logo" />
-          <div className="sp-brand-sub">Student Portal</div>
+    <div className="dp-wrapper">
+      <div className="dp-ocean">
+        <div className="dp-wave"></div>
+        <div className="dp-wave"></div>
+      </div>
+
+      <Link to="/" className="dp-back">← Back to Website</Link>
+
+      <div className={`dp-container ${rightActive ? 'right-panel-active' : ''}`}>
+
+        {/* ================= SIGN UP PANEL ================= */}
+        <div className="dp-form-container dp-sign-up-container">
+          <form className="dp-form" onSubmit={handleSubmit} noValidate>
+            <img src={academyLogo} alt="Safeer Quran Academy" className="dp-logo" />
+            <h1>Create Account</h1>
+            <span className="dp-bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</span>
+
+            {mode === 'signup' && globalErr && <div className="dp-error-box">{globalErr}</div>}
+            {mode === 'signup' && successMsg && <div className="dp-success-box">{successMsg}</div>}
+
+            <div className="dp-field">
+              <label>Full Name</label>
+              <input type="text" placeholder="Muhammad Ahmed" value={form.name} onChange={set('name')} disabled={loading} />
+              {errors.name && <span className="dp-error-text">{errors.name}</span>}
+            </div>
+
+            <div className="dp-field">
+              <label>Select Course</label>
+              <select value={form.course} onChange={set('course')} disabled={loading}>
+                <option value="">-- Select Course --</option>
+                {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+              {errors.course && <span className="dp-error-text">{errors.course}</span>}
+            </div>
+
+            <div className="dp-field">
+              <label>Email</label>
+              <input type="email" placeholder="email@example.com" value={form.email} onChange={set('email')} disabled={loading} autoComplete="email" />
+              {errors.email && <span className="dp-error-text">{errors.email}</span>}
+            </div>
+
+            <div className="dp-field">
+              <label>Password</label>
+              <input type={showPass ? 'text' : 'password'} placeholder="Min. 6 characters" value={form.password} onChange={set('password')} disabled={loading} autoComplete="new-password" />
+              {errors.password && <span className="dp-error-text">{errors.password}</span>}
+            </div>
+
+            <div className="dp-field">
+              <label>Confirm Password</label>
+              <input type={showPass ? 'text' : 'password'} placeholder="Re-enter password" value={form.confirm} onChange={set('confirm')} disabled={loading} />
+              {errors.confirm && <span className="dp-error-text">{errors.confirm}</span>}
+            </div>
+
+            <button type="button" className="dp-link-btn" onClick={() => setShowPass(s => !s)}>
+              {showPass ? 'Hide password' : 'Show password'}
+            </button>
+
+            <button type="submit" className="dp-btn" disabled={loading}>
+              {loading ? 'Please wait…' : 'Sign Up'}
+            </button>
+          </form>
         </div>
-        <div className="sp-divider" />
 
-        {submitted && mode === 'forgot' ? (
-          <div className="sp-success">
-            <div className="sp-success-icon"></div>
-            <h2 className="sp-success-title">Email Sent!</h2>
-            <p>Password reset email sent. Check your inbox.</p>
-            <button className="sp-submit" style={{ marginTop: 16 }} onClick={() => switchMode('login')}>Back to Login</button>
-          </div>
-        ) : (
-          <>
-            {mode !== 'forgot' && (
-              <div className="sp-tabs">
-                <button className={`sp-tab ${mode === 'login' ? 'active' : ''}`} onClick={() => switchMode('login')}>Sign In</button>
-                <button className={`sp-tab ${mode === 'signup' ? 'active' : ''}`} onClick={() => switchMode('signup')}>Register</button>
+        {/* ================= SIGN IN / FORGOT PANEL ================= */}
+        <div className="dp-form-container dp-sign-in-container">
+          {mode === 'forgot' ? (
+            submitted ? (
+              <div className="dp-form">
+                <img src={academyLogo} alt="Safeer Quran Academy" className="dp-logo" />
+                <h1>Email Sent!</h1>
+                <p className="dp-form-sub">Password reset email sent. Check your inbox.</p>
+                <button className="dp-btn" onClick={() => switchMode('login')}>Back to Login</button>
               </div>
-            )}
+            ) : (
+              <form className="dp-form" onSubmit={handleSubmit} noValidate>
+                <img src={academyLogo} alt="Safeer Quran Academy" className="dp-logo" />
+                <h1>Reset Password</h1>
+                <span className="dp-bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</span>
 
-            <h2 className="sp-title">
-              {mode === 'login' && 'Welcome Back'}
-              {mode === 'signup' && 'Create Account'}
-              {mode === 'forgot' && 'Reset Password'}
-            </h2>
+                {globalErr && <div className="dp-error-box">{globalErr}</div>}
 
-            {globalErr &&<div className="sp-global-err">{globalErr}</div>}
-            {successMsg && <div className="sp-success-alert">{successMsg}</div>}
-
-            <form className="sp-form" onSubmit={handleSubmit} noValidate>
-
-              {/* SIGNUP ONLY */}
-              {mode === 'signup' && (
-                <>
-                  <div className="sp-field">
-                    <label>Full Name</label>
-                    <div className="sp-input-wrap">
-                      <span className="sp-field-icon"></span>
-                      <input type="text" placeholder="Muhammad Ahmed" value={form.name} onChange={set('name')} disabled={loading} />
-                    </div>
-                    {errors.name && <span className="sp-error">{errors.name}</span>}
-                  </div>
-
-                  <div className="sp-field">
-                    <label>Select Course</label>
-                    <div className="sp-input-wrap">
-                      <span className="sp-field-icon"></span>
-                      <select value={form.course} onChange={set('course')} disabled={loading}>
-                        <option value="">-- Select Course --</option>
-                        {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
-                      </select>
-                    </div>
-                    {errors.course && <span className="sp-error">{errors.course}</span>}
-                  </div>
-                </>
-              )}
-
-              {/* EMAIL */}
-              <div className="sp-field">
-                <label>Email</label>
-                <div className="sp-input-wrap">
-                  <span className="sp-field-icon"></span>
+                <div className="dp-field">
+                  <label>Email</label>
                   <input type="email" placeholder="email@example.com" value={form.email} onChange={set('email')} disabled={loading} autoComplete="email" />
+                  {errors.email && <span className="dp-error-text">{errors.email}</span>}
                 </div>
-                {errors.email && <span className="sp-error">{errors.email}</span>}
+
+                <button type="submit" className="dp-btn" disabled={loading}>
+                  {loading ? 'Please wait…' : 'Send Reset Link'}
+                </button>
+
+                <button type="button" className="dp-link-btn" onClick={() => switchMode('login')}>
+                  ← Back to Sign In
+                </button>
+              </form>
+            )
+          ) : (
+            <form className="dp-form" onSubmit={handleSubmit} noValidate>
+              <img src={academyLogo} alt="Safeer Quran Academy" className="dp-logo" />
+              <h1>Welcome Back</h1>
+              <span className="dp-bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</span>
+
+              {mode === 'login' && globalErr && <div className="dp-error-box">{globalErr}</div>}
+              {mode === 'login' && successMsg && <div className="dp-success-box">{successMsg}</div>}
+
+              <div className="dp-field">
+                <label>Email</label>
+                <input type="email" placeholder="email@example.com" value={form.email} onChange={set('email')} disabled={loading} autoComplete="email" />
+                {errors.email && <span className="dp-error-text">{errors.email}</span>}
               </div>
 
-              {/* PASSWORD */}
-              {mode !== 'forgot' && (
-                <div className="sp-field">
-                  <label>Password</label>
-                  <div className="sp-input-wrap">
-                    <span className="sp-field-icon"></span>
-                    <input type={showPass ? 'text' : 'password'} placeholder={mode === 'signup' ? 'Min. 6 characters' : 'Enter password'} value={form.password} onChange={set('password')} disabled={loading} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} />
-                    <button type="button"className="sp-eye"onClick={() =>setShowPass(s =>!s)}>{showPass ?'':''}</button>
-                  </div>
-                  {errors.password && <span className="sp-error">{errors.password}</span>}
-                </div>
-              )}
+              <div className="dp-field">
+                <label>Password</label>
+                <input type={showPass ? 'text' : 'password'} placeholder="Enter password" value={form.password} onChange={set('password')} disabled={loading} autoComplete="current-password" />
+                {errors.password && <span className="dp-error-text">{errors.password}</span>}
+              </div>
 
-              {/* CONFIRM PASSWORD */}
-              {mode === 'signup' && (
-                <div className="sp-field">
-                  <label>Confirm Password</label>
-                  <div className="sp-input-wrap">
-                    <span className="sp-field-icon"></span>
-                    <input type={showPass ? 'text' : 'password'} placeholder="Re-enter password" value={form.confirm} onChange={set('confirm')} disabled={loading} />
-                  </div>
-                  {errors.confirm && <span className="sp-error">{errors.confirm}</span>}
-                </div>
-              )}
-
-              {mode === 'login' && (
-                <div className="sp-login-extras">
-                  <button type="button" className="sp-forgot-link" onClick={() => switchMode('forgot')}>Forgot Password?</button>
-                </div>
-              )}
-
-              {mode === 'forgot' && (
-                <button type="button" className="sp-forgot-link" style={{ marginBottom: 10 }} onClick={() => switchMode('login')}>
-                  <span className="button-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span>
-                  Back to Sign In
-                </button>
-              )}
-
-              <button type="submit" className="sp-submit" disabled={loading}>
-                {loading ? 'Please wait...' : mode === 'login' ? 'Sign In →' : mode === 'signup' ? 'Create Account →' : 'Send Reset Link →'}
+              <button type="button" className="dp-link-btn" onClick={() => switchMode('forgot')}>
+                Forgot your password?
               </button>
 
-              {mode !== 'forgot' && (
-                <button
-                  type="button"
-                  className="faculty-back-btn"
-                  style={{ marginTop: 12 }}
-                  onClick={() => navigate('/')}
-                >
-                  <span className="button-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span>
-                  Back to Home
-                </button>
-              )}
-
+              <button type="submit" className="dp-btn" disabled={loading}>
+                {loading ? 'Please wait…' : 'Sign In'}
+              </button>
             </form>
-          </>
-        )}
+          )}
+        </div>
+
+        {/* ================= OVERLAY (hidden on mobile, see CSS) ================= */}
+        <div className="dp-overlay-container">
+          <div className="dp-overlay">
+            <div className="dp-overlay-panel dp-overlay-left">
+              <h1>Welcome Back!</h1>
+              <p>Sign in here if you already have an account with Safeer Quran Academy.</p>
+              <button className="dp-ghost" onClick={() => switchMode('login')}>Sign In</button>
+            </div>
+            <div className="dp-overlay-panel dp-overlay-right">
+              <h1>New Here?</h1>
+              <p>Register now and begin your journey of learning the Holy Quran with us.</p>
+              <button className="dp-ghost" onClick={() => switchMode('signup')}>Sign Up</button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile-only tab switcher (overlay is hidden on small screens) */}
+        <div className="dp-tabs-mobile">
+          <button className={mode !== 'signup' ? 'active' : ''} onClick={() => switchMode('login')}>Sign In</button>
+          <button className={mode === 'signup' ? 'active' : ''} onClick={() => switchMode('signup')}>Sign Up</button>
+        </div>
       </div>
     </div>
   );

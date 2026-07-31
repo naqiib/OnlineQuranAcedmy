@@ -1,5 +1,5 @@
 // src/components/Navbar.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import FeesModal from './FeesModal';
 import logo from '../assets/logo.png';  // ← Added .png extension
@@ -7,12 +7,22 @@ import logo from '../assets/logo.png';  // ← Added .png extension
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [feesOpen, setFeesOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
 
+  // Navbar starts transparent (sits over the hero image) and becomes
+  // solid once the user scrolls down — same effect as Alexium's navbar.
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 40);
+    handleScroll(); // set correct state on mount (e.g. if page loads mid-scroll)
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <>
-      <header className="navbar">
+      <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="navbar-inner">
 
           <Link to="/" className="navbar-logo" onClick={closeMenu}>
