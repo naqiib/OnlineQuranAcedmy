@@ -1,7 +1,7 @@
 // src/pages/Courses.jsx
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
-import courses from '../data/coursesData';
+import courses, { courseImage } from '../data/coursesData';
 
 export default function Courses() {
   const trackRef = useRef(null);
@@ -22,7 +22,7 @@ export default function Courses() {
       <div className="courses-v2-track" ref={trackRef}>
         {courses.map((c) => (
           <div className="course-card-v2" key={c.id}>
-            <img src={c.image || '/quran-stand.png'} alt={c.title} />
+            <img src={courseImage} alt={c.title} />
             <h3>{c.title}</h3>
             <div className="course-v2-price">${c.price ?? '99'}.00</div>
             <div className="course-v2-meta">

@@ -7,6 +7,10 @@
 // "Coming soon" until a link is added. Videos are NOT hosted on this
 // website — they open in Google Drive, so there's no server storage cost.
 
+import quranImage from '../assets/quran.avif';
+
+export const courseImage = quranImage;
+
 const courses = [
   {
     id: 0,
