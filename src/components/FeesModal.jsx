@@ -8,10 +8,12 @@ const feesData = [
     icon: 'ق',
     title: 'Noorani Qaida',
     subtitle: '+ Islami Duayen included',
-    price: 1200,
-    unit: 'hour',
+    price: 40, // 45 - 5
+    unit: 'month',
     hours: 20,
-    perHour: 1200,
+    perHour: 40,
+    days: '3 days/week',
+    duration: '30 minutes',
     features: [
       '20 hour classes per month',
       'Islami Duayen included (free)',
@@ -25,14 +27,16 @@ const feesData = [
     icon: 'ن',
     title: 'Nazira Quran',
     subtitle: '+ Islami Duayen included',
-    price: 1400,
-    unit: 'hour',
+    price: 65, // 70 - 5
+    unit: 'month',
     hours: 20,
-    perHour: 1400,
+    perHour: 65,
+    days: '6 days/week',
+    duration: '30 minutes',
     features: [
       '20 hour classes per month',
       'Islami Duayen included (free)',
-      '5 sessions per week',
+      '6 sessions per week',
       'Age 6+ years',
     ],
   },
@@ -42,10 +46,12 @@ const feesData = [
     icon: 'ح',
     title: 'Hifz ul Quran',
     subtitle: '+ Islami Duayen included',
-    price: 1400,
-    unit: 'hour',
+    price: 65, // 70 - 5
+    unit: 'month',
     hours: 20,
-    perHour: 1400,
+    perHour: 65,
+    days: '5–6 days/week',
+    duration: '30 minutes',
     features: [
       '20 hour classes per month',
       'Islami Duayen included (free)',
@@ -56,7 +62,7 @@ const feesData = [
 ];
 
 const familyDiscount = {
-  icon:'',
+  icon: '👨‍👩‍👧‍👦',
   title: 'Family Discount',
   desc: '50% off for every additional student from the same family (2+ members)',
   example: 'Example: 2 kids → 2nd student pays 50% of course fee',
@@ -87,7 +93,7 @@ export default function FeesModal({ onClose }) {
         {/* Header */}
         <div className="fm-header">
           <div>
-            <div className="fm-tag">Transparent Pricing</div>
+            <div className="fm-tag">💰 Transparent Pricing</div>
             <h2 className="fm-title">Fee Structure</h2>
             <p className="fm-subtitle">
               Simple, affordable fees — no hidden charges
@@ -102,7 +108,57 @@ export default function FeesModal({ onClose }) {
           </button>
         </div>
 
-        {/* Fee Cards */}
+        {/* USA Fee Table */}
+        <div className="fm-usa-table-wrap">
+          <div className="fm-usa-table-header">
+            <span className="fm-usa-flag">🇺🇸</span>
+            <span className="fm-usa-title">Monthly Fee for USA</span>
+          </div>
+          <table className="fm-usa-table">
+            <thead>
+              <tr>
+                <th>Days/Week</th>
+                <th>Duration</th>
+                <th>One Student</th>
+                <th>Two Students</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>3 days/week</td>
+                <td>30 minutes</td>
+                <td>$40</td>
+                <td>$35</td>
+              </tr>
+              <tr>
+                <td>6 days/week</td>
+                <td>30 minutes</td>
+                <td>$65</td>
+                <td>$55</td>
+              </tr>
+              <tr>
+                <td>Sat - Sun</td>
+                <td>30 minutes</td>
+                <td>$25</td>
+                <td>$20</td>
+              </tr>
+              <tr>
+                <td>Sat - Sun</td>
+                <td>40 minutes</td>
+                <td>$30</td>
+                <td>$25</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* PKR Fee Cards */}
+        <div className="fm-section-label">
+          <span className="fm-section-line"></span>
+          <span className="fm-section-text">📍 Pakistan (PKR)</span>
+          <span className="fm-section-line"></span>
+        </div>
+
         <div className="fm-cards">
           {feesData.map((f) => (
             <div key={f.id} className={`fm-card fc-${f.color}`}>
@@ -125,7 +181,7 @@ export default function FeesModal({ onClose }) {
                 <div className="fm-price-row">
                   <span className="fm-currency">PKR</span>
                   <span className="fm-amount">
-                    {f.price.toLocaleString()}
+                    {(f.price * 280).toLocaleString()}
                   </span>
                   <span className="fm-unit">/{f.unit}</span>
                 </div>
@@ -136,7 +192,7 @@ export default function FeesModal({ onClose }) {
                     ⏱ {f.hours} hours/month
                   </span>
                   <span className="fm-pill">
-                     PKR {f.perHour}/hour
+                    💰 PKR {(f.price * 280).toLocaleString()}/month
                   </span>
                 </div>
 

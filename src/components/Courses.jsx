@@ -1,4 +1,3 @@
-// src/pages/Courses.jsx
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
 import courses, { courseImage } from '../data/coursesData';
@@ -24,7 +23,7 @@ export default function Courses() {
           <div className="course-card-v2" key={c.id}>
             <img src={courseImage} alt={c.title} />
             <h3>{c.title}</h3>
-            <div className="course-v2-price">${c.price ?? '99'}.00</div>
+            <div className="course-v2-price">{c.price ?? '$99.00'}</div>
             <div className="course-v2-meta">
               <span>⏱ {c.sessions ? `${c.sessions} sessions` : 'Live Classes'}</span>
               <span>📶 {c.age ?? 'Beginner'}</span>

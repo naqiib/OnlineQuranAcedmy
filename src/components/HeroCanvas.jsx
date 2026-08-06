@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 // Interactive dot-grid background: a soft grid of dots that gently
 // pulse and brighten/enlarge near the user's cursor. Colors are tied

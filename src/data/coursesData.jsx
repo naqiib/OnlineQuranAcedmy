@@ -249,4 +249,23 @@ const courses = [
   },
 ];
 
+// Standard pricing plans (one-student / two-students)
+const commonPlans = [
+  { id: 'plan_a', label: '3 days/week · 30 minutes', one: 40, two: 35 },
+  { id: 'plan_b', label: '6 days/week · 30 minutes', one: 65, two: 55 },
+  { id: 'plan_c', label: 'Sat - Sun · 30 minutes', one: 25, two: 20 },
+  { id: 'plan_d', label: 'Sat - Sun · 40 minutes', one: 30, two: 25 },
+];
+
+// Annotate each course with the common plans and a computed price range
+courses.forEach((c) => {
+  c.plans = commonPlans;
+  const ones = commonPlans.map((p) => p.one);
+  const min = Math.min(...ones);
+  const max = Math.max(...ones);
+  c.minPrice = min;
+  c.maxPrice = max;
+  c.price = min === max ? `$${min}.00` : `$${min}–$${max}`;
+});
+
 export default courses;

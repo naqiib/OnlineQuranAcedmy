@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, updateProfile, signOut } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import academyLogo from '../assets/logo.png';
 
@@ -80,6 +80,15 @@ export default function StudentPortal() {
           status: 'pending',
           feeStatus: 'pending',
           joinedAt: serverTimestamp(),
+        });
+        await addDoc(collection(db, 'notifications'), {
+          type: 'new_registration',
+          studentId: cred.user.uid,
+          studentName: form.name.trim(),
+          course: form.course,
+          status: 'unread',
+          createdAt: serverTimestamp(),
+          audience: ['faculty'],
         });
         await signOut(auth);
         setSuccessMsg('Account created! Please sign in to continue.');

@@ -1,32 +1,34 @@
 // src/components/Hero.jsx
-import { motion } from "framer-motion";
-import { useState } from "react";
-import quranImg from "../assets/quran.avif";
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import quranImg from '../assets/quran.avif';
+import courses from '../data/coursesData';
 
+// Feature the first three courses and use their computed price ranges
 const featuredCourses = [
-  { 
-    id: 1,
-    title: "Reading Quran Basics", 
-    price: "$99.00", 
-    duration: "Live Classes", 
-    level: "Beginner",
-    description: "Learn to read Quran with proper pronunciation and basic rules"
+  {
+    id: courses[0].id,
+    title: courses[0].title,
+    price: courses[0].price,
+    duration: courses[0].duration,
+    level: courses[0].level,
+    description: courses[0].desc,
   },
-  { 
-    id: 2,
-    title: "Tajweed & Tarteel", 
-    price: "$120.00", 
-    duration: "Live Classes", 
-    level: "Intermediate",
-    description: "Master the rules of Tajweed and beautiful recitation"
+  {
+    id: courses[1].id,
+    title: courses[1].title,
+    price: courses[1].price,
+    duration: courses[1].duration,
+    level: courses[1].level,
+    description: courses[1].desc,
   },
-  { 
-    id: 3,
-    title: "Quran Memorization", 
-    price: "$150.00", 
-    duration: "Live Classes", 
-    level: "Advanced",
-    description: "Memorize the Quran with proper revision and retention techniques"
+  {
+    id: courses[2].id,
+    title: courses[2].title,
+    price: courses[2].price,
+    duration: courses[2].duration,
+    level: courses[2].level,
+    description: courses[2].desc,
   },
 ];
 
@@ -136,12 +138,12 @@ export default function Hero() {
           <div className="hero-v2-price">{currentCourse.price}</div>
           <div className="hero-v2-meta">
             <span>⏱ {currentCourse.duration}</span>
-            <span>📚 {currentCourse.level}</span>
+            <span>{currentCourse.level}</span>
           </div>
           <p className="hero-v2-card-desc">{currentCourse.description}</p>
           <div className="hero-v2-card-btns">
             <a href="/contact" className="btn-primary">Register Now</a>
-            <a href={`/course/${currentCourse.id}`} className="btn-half-green">
+            <a href={`/courses/${currentCourse.id}`} className="btn-secondary-outline">
               <span>See Details →</span>
             </a>
           </div>

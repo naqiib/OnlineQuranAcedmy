@@ -1,1 +1,2 @@
-/*    /index.html   200
+# Create _redirects in public folder
+echo "/*    /index.html   200" > public/_redirects

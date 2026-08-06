@@ -1,12 +1,26 @@
 // src/pages/Dashboard.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, db } from '../firebase';
+import { auth, db, storage } from '../firebase';
 import {
   doc, getDoc, collection, query,
   where, getDocs, onSnapshot, updateDoc, addDoc,
 } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+// Class fee structure (USD). Update USD_TO_PKR as the exchange rate changes.
+const USD_TO_PKR = 280;
+const FEE_STRUCTURE = [
+  { key: '3days_30', days: '3 days/week', duration: '30 minutes', one: 40, two: 35 },
+  { key: '6days_30', days: '6 days/week', duration: '30 minutes', one: 65, two: 55 },
+  { key: 'weekend_30', days: 'Sat - Sun', duration: '30 minutes', one: 25, two: 20 },
+  { key: 'weekend_40', days: 'Sat - Sun', duration: '40 minutes', one: 30, two: 25 },
+];
+const RECOMMENDED_TEACHER = {
+  Female: 'Shahana Safir',
+  Male: 'Hafiz Safeer Khan',
+};
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
@@ -15,6 +29,7 @@ export default function StudentDashboard() {
   const [notices, setNotices] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [attendance, setAttendance] = useState([]);
+  const [quizzes, setQuizzes] = useState([]);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -23,6 +38,13 @@ export default function StudentDashboard() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState('');
   const [profileError, setProfileError] = useState('');
+  const [photoUploading, setPhotoUploading] = useState(false);
+
+  const [teacherChoice, setTeacherChoice] = useState('');
+  const [savingTeacher, setSavingTeacher] = useState(false);
+
+  const [feeAmount, setFeeAmount] = useState('');
+  const [submittingFee, setSubmittingFee] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,11 +56,14 @@ export default function StudentDashboard() {
           const data = { id: user.uid, ...snap.data() };
           setStudent(data);
           setEditForm({ name: data.name || '', phone: data.phone || '', country: data.country || '', gender: data.gender || '', dob: data.dob || '' });
+          setTeacherChoice(data.teacherId || '');
         }
         const tSnap = await getDocs(collection(db, 'teachers'));
         setTeachers(tSnap.docs.map(d => ({ id: d.id, ...d.data() })));
         const aSnap = await getDocs(query(collection(db, 'attendance'), where('studentId', '==', user.uid)));
         setAttendance(aSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+        const qSnap = await getDocs(query(collection(db, 'quizzes'), where('studentId', '==', user.uid)));
+        setQuizzes(qSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       } catch (err) { console.error(err); }
       finally { setLoading(false); }
     };
@@ -75,7 +100,7 @@ export default function StudentDashboard() {
     return Math.round((attendance.filter(a => a.status === 'present').length / attendance.length) * 100);
   };
 
-  const sendFacultyNotification = async (title, description) => {
+  const sendFacultyNotification = async (title, description, extra = {}) => {
     try {
       await addDoc(collection(db, 'notices'), {
         title,
@@ -84,6 +109,7 @@ export default function StudentDashboard() {
         audience: ['faculty'],
         priority: 'normal',
         createdBy: student?.email || student?.name || 'Student',
+        ...extra,
       });
     } catch (err) {
       console.error('Failed to send faculty notification', err);
@@ -103,7 +129,8 @@ export default function StudentDashboard() {
       setProfileSuccess('Profile updated successfully!');
       await sendFacultyNotification(
         'Student profile updated',
-        `${editForm.name || student.name} updated their profile details. Please review the changes.`
+        `${editForm.name || student.name} updated their profile details. Please review the changes.`,
+        { type: 'profile_update', studentId: student.id }
       );
       setTimeout(() => setProfileSuccess(''), 3000);
     } catch (err) {
@@ -111,6 +138,70 @@ export default function StudentDashboard() {
       setProfileError('Unable to save profile. Please try again.');
     } finally {
       setSavingProfile(false);
+    }
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !student) return;
+    setPhotoUploading(true);
+    setProfileError('');
+    try {
+      const fileRef = storageRef(storage, `profile-photos/${student.id}`);
+      await uploadBytes(fileRef, file);
+      const url = await getDownloadURL(fileRef);
+      await updateDoc(doc(db, 'students', student.id), { photoURL: url });
+      setStudent(prev => ({ ...prev, photoURL: url }));
+    } catch (err) {
+      console.error(err);
+      setProfileError('Could not upload photo. Please try again.');
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
+
+  const handleTeacherSave = async () => {
+    if (!teacherChoice) return;
+    setSavingTeacher(true);
+    try {
+      const chosen = teachers.find(t => t.id === teacherChoice);
+      await updateDoc(doc(db, 'students', student.id), { teacherId: teacherChoice });
+      setStudent(prev => ({ ...prev, teacherId: teacherChoice }));
+      await sendFacultyNotification(
+        'Teacher preference selected',
+        `${student.name} selected ${chosen?.name || 'a teacher'} as their preferred teacher.`,
+        { type: 'teacher_selected', studentId: student.id }
+      );
+    } catch (err) { console.error(err); }
+    finally { setSavingTeacher(false); }
+  };
+
+  const handleFeeSubmit = async () => {
+    const amount = parseInt(feeAmount);
+    if (!amount || amount <= 0) { setProfileError('Enter a valid amount.'); return; }
+    setSubmittingFee(true);
+    setProfileError('');
+    try {
+      await addDoc(collection(db, 'notices'), {
+        title: 'Fee submitted for verification',
+        description: `${student.name} submitted PKR ${amount.toLocaleString()} for verification.`,
+        date: new Date(),
+        audience: ['faculty'],
+        priority: 'high',
+        type: 'fee_submitted',
+        studentId: student.id,
+        amount,
+        resolved: false,
+        createdBy: student.email || student.name,
+      });
+      setFeeAmount('');
+      setProfileSuccess('Fee submitted. It will stay pending until faculty approves it.');
+      setTimeout(() => setProfileSuccess(''), 4000);
+    } catch (err) {
+      console.error(err);
+      setProfileError('Could not submit fee. Please try again.');
+    } finally {
+      setSubmittingFee(false);
     }
   };
 
@@ -123,8 +214,17 @@ export default function StudentDashboard() {
     {key:'payment', icon:'', label:'Payment'},
     {key:'attendance', icon:'', label:'Attendance'},
     {key:'results', icon:'', label:'Results'},
+    {key:'quiz', icon:'', label:'Quiz Results'},
     {key:'notices', icon:'', label:'Notices'},
   ];
+
+  const Avatar = ({ size = 36, fontSize = 14 }) => (
+    student?.photoURL ? (
+      <img src={student.photoURL} alt="" style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover' }} />
+    ) : (
+      <span>{student?.name?.[0] || 'S'}</span>
+    )
+  );
 
   if (loading) return (
     <div className="db-loading">
@@ -161,7 +261,7 @@ export default function StudentDashboard() {
         </div>
 
         <div className="db-sidebar-footer">
-          <div className="db-footer-avatar">{student?.name?.[0] || 'S'}</div>
+          <div className="db-footer-avatar"><Avatar /></div>
           <div>
             <div className="db-footer-name">{student?.name?.split(' ')[0] || 'Student'}</div>
             <div className="db-footer-role">{student?.course || 'Student'}</div>
@@ -184,7 +284,7 @@ export default function StudentDashboard() {
               <span className="db-notif-dot"/>
             </button>
             <div className="db-topbar-user">
-              <div className="db-topbar-avatar">{student?.name?.[0] || 'S'}</div>
+              <div className="db-topbar-avatar"><Avatar /></div>
               <span className="db-topbar-name">{student?.name?.split(' ')[0] || 'Student'}</span>
             </div>
             <button onClick={handleLogout}
@@ -394,6 +494,22 @@ export default function StudentDashboard() {
               </div>
               {profileSuccess && <div className="db-success-msg">{profileSuccess}</div>}
               {profileError && <div className="db-error-msg">{profileError}</div>}
+
+              {/* Profile picture */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+                <div style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 700, color: '#64748b' }}>
+                  {student?.photoURL
+                    ? <img src={student.photoURL} alt="profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : (student?.name?.[0] || 'S')}
+                </div>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: '#2563eb', cursor: 'pointer' }}>
+                    {photoUploading ? 'Uploading...' : 'Change display picture'}
+                    <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} disabled={photoUploading} />
+                  </label>
+                </div>
+              </div>
+
               <div className="db-profile-grid">
                 <div className="db-profile-field"><label>Email</label><p>{student?.email || '—'}</p></div>
                 <div className="db-profile-field"><label>Course</label><p>{student?.course || '—'}</p></div>
@@ -430,6 +546,25 @@ export default function StudentDashboard() {
                   }
                 </div>
               </div>
+
+              {/* Teacher selection — only once approved */}
+              {student?.status === 'active' && (
+                <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #e2e8f0' }}>
+                  <div className="db-card-title" style={{ marginBottom: 10, fontSize: 13 }}>Select your teacher</div>
+                  <select className="db-profile-input" value={teacherChoice} onChange={e => setTeacherChoice(e.target.value)}>
+                    <option value="">Select teacher</option>
+                    {teachers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                  </select>
+                  {student?.gender && RECOMMENDED_TEACHER[student.gender] && (
+                    <p style={{ fontSize: 12, color: '#64748b', marginTop: 6 }}>
+                      Recommended for you: {RECOMMENDED_TEACHER[student.gender]}
+                    </p>
+                  )}
+                  <button className="db-save-btn" style={{ marginTop: 10 }} onClick={handleTeacherSave} disabled={savingTeacher || !teacherChoice}>
+                    {savingTeacher ? 'Saving...' : 'Save teacher preference'}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -445,6 +580,22 @@ export default function StudentDashboard() {
                 {student?.currentSurah &&<p style={{fontSize: 13, marginTop: 10, color:'#1e293b'}}>Currently on:<strong>{student.currentSurah}</strong></p>}
                 {student?.teacherNote &&<div className="db-teacher-note"style={{marginTop: 12}}><strong>Teacher's Note:</strong>{student.teacherNote}</div>}
               </div>
+
+              {student?.monthlyProgress?.length > 0 && (
+                <div style={{ marginBottom: 16 }}>
+                  <div className="db-card-title" style={{ marginBottom: 8, fontSize: 13 }}>Monthly progress</div>
+                  {student.monthlyProgress.slice().reverse().map((m, i) => (
+                    <div key={i} className="db-notice-item">
+                      <div className="db-notice-dot blue" />
+                      <div>
+                        <div className="db-notice-title">{m.month}: {m.para} para completed</div>
+                        <div className="db-notice-date">Improvement: {m.improvement}%{m.note ? ` — ${m.note}` : ''}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="db-card-title"style={{marginBottom: 12, fontSize: 13}}>Class Schedule</div>
               <div className="db-schedule-grid">
                 {student?.schedule?.length > 0 ? student.schedule.map((s, i) => (
@@ -475,6 +626,19 @@ export default function StudentDashboard() {
               </div>
               {student?.nextFeeDate && <div className="db-pay-row"><span>Next Due Date</span><strong>{fmt(student.nextFeeDate)}</strong></div>}
               <div className="db-pay-note">ℹ To make a payment, please contact your teacher on WhatsApp or via email. Fee details are updated by the admin after confirmation.</div>
+
+              {student?.status === 'active' && (
+                <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #e2e8f0' }}>
+                  <div className="db-card-title" style={{ fontSize: 13, marginBottom: 8 }}>Submit a payment</div>
+                  {profileSuccess && <div className="db-success-msg">{profileSuccess}</div>}
+                  {profileError && <div className="db-error-msg">{profileError}</div>}
+                  <input className="db-profile-input" type="number" placeholder="Amount paid (PKR)" value={feeAmount} onChange={e => setFeeAmount(e.target.value)} />
+                  <button className="db-save-btn" style={{ marginTop: 8 }} onClick={handleFeeSubmit} disabled={submittingFee}>
+                    {submittingFee ? 'Submitting...' : 'Submit Fee for Verification'}
+                  </button>
+                  <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 6 }}>Status stays pending until faculty approves your submission.</p>
+                </div>
+              )}
             </div>
           )}
 
@@ -525,6 +689,29 @@ export default function StudentDashboard() {
                   </tbody>
                 </table>
               ) : <p style={{ color: '#94a3b8', fontSize: 13, padding: '20px 0' }}>No results yet. Results will appear here after your exams.</p>}
+            </div>
+          )}
+
+          {/* ── QUIZ TAB ── */}
+          {activeTab === 'quiz' && (
+            <div className="db-card">
+              <div className="db-card-head"><span className="db-card-title">Quiz Results</span></div>
+              {quizzes.length > 0 ? (
+                <table className="db-table">
+                  <thead><tr><th>Quiz</th><th>Date</th><th>Marks</th><th>Total</th><th>%</th></tr></thead>
+                  <tbody>
+                    {quizzes.map(q => (
+                      <tr key={q.id}>
+                        <td>{q.title}</td>
+                        <td>{fmtShort(q.date?.toDate?.() || q.date)}</td>
+                        <td>{q.obtained}</td>
+                        <td>{q.total}</td>
+                        <td>{Math.round((q.obtained / q.total) * 100)}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : <p style={{ color: '#94a3b8', fontSize: 13, padding: '20px 0' }}>No quizzes yet.</p>}
             </div>
           )}
 

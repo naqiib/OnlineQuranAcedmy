@@ -1,5 +1,5 @@
 // src/components/Navbar.jsx
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import FeesModal from './FeesModal';
 import logo from '../assets/logo.png';
