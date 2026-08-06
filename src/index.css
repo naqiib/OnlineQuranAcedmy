@@ -289,6 +289,28 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   transform: rotate(-45deg) translate(7px, -7px);
 }
 
+/* Small profile area (used on mobile when primary nav is hidden) */
+.nav-profile {
+  display: none;
+  gap: 8px;
+  align-items: center;
+}
+.nav-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: #ffffff;
+  color: #1c7a4b;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  margin-left: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.nav-avatar:hover { background: #f1f8e9; color: #14291b; transform: translateY(-2px); }
+
 /* Mobile Menu */
 .mobile-menu {
   display: none;
@@ -384,6 +406,10 @@ button { cursor: pointer; font-family: 'Poppins', sans-serif; }
   .logo-img {
     height: 45px;
   }
+
+  /* Show compact profile buttons when nav links are hidden */
+  .nav-profile { display: flex; }
+  .nav-profile .nav-avatar { padding: 6px 10px; font-size: 13px; }
   
   .navbar.scrolled .navbar-inner {
     height: 58px;

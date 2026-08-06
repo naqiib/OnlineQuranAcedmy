@@ -3,11 +3,16 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import FeesModal from './FeesModal';
 import logo from '../assets/logo.png';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [feesOpen, setFeesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userRole, setUserRole] = useState(null); // 'student' | 'faculty' | null
 
   // Handle scroll effect with smooth transition
   useEffect(() => {
@@ -23,6 +28,25 @@ export default function Navbar() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Listen for auth state to show profile buttons
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user);
+      setUserRole(null);
+      if (user) {
+        try {
+          const stu = await getDoc(doc(db, 'students', user.uid));
+          if (stu.exists()) { setUserRole('student'); return; }
+          const fac = await getDoc(doc(db, 'faculty', user.uid));
+          if (fac.exists()) { setUserRole('faculty'); return; }
+        } catch (e) {
+          console.error('Role detection error', e);
+        }
+      }
+    });
+    return () => unsub();
   }, []);
 
   const closeMenu = () => setMenuOpen(false);
@@ -48,9 +72,36 @@ export default function Navbar() {
             </button>
 
             <Link to="/contact" className="navbar-cta">Free Trial</Link>
-            <Link to="/portal" className="portal-btn">Student Portal</Link>
-            <Link to="/faculty-login" className="faculty-portal-btn">Faculty Portal</Link>
+            {/* If logged in, show profile quick links; otherwise show portal/login links */}
+            {currentUser && userRole === 'student' ? (
+              <Link to="/dashboard" className="portal-btn">My Profile</Link>
+            ) : (
+              <Link to="/portal" className="portal-btn">Student Portal</Link>
+            )}
+
+            {currentUser && userRole === 'faculty' ? (
+              <Link to="/faculty-dashboard" className="faculty-portal-btn">Faculty Panel</Link>
+            ) : (
+              <Link to="/faculty-login" className="faculty-portal-btn">Faculty Portal</Link>
+            )}
           </nav>
+
+          {/* Small profile icons visible on mobile when navbar-links are hidden */}
+          <div className="nav-profile">
+            {currentUser && userRole === 'student' && (
+              <Link to="/dashboard" className="nav-avatar">Profile</Link>
+            )}
+            {currentUser && userRole === 'faculty' && (
+              <Link to="/faculty-dashboard" className="nav-avatar">Faculty</Link>
+            )}
+          
+            {!currentUser && (
+              <>
+                <Link to="/portal" className="nav-avatar">Student</Link>
+                <Link to="/faculty-login" className="nav-avatar">Faculty</Link>
+              </>
+            )}
+          </div>
 
           {/* Mobile */}
           <button
